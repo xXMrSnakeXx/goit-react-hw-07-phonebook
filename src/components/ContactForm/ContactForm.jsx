@@ -30,7 +30,7 @@ export class ContactForm extends Component {
       number,
     };
     onSubmitData(data);
-    setTimeout(this.formReset, 2000);
+    this.formReset();
   };
 
   formReset = () => {

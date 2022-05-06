@@ -3,6 +3,7 @@ import { Component } from 'react';
 import { ContactForm } from './ContactForm';
 import { ContactsList } from './ContactsList';
 import { Filter } from './Filter';
+import s from './App.module.css';
 
 export class App extends Component {
   state = {
@@ -17,10 +18,14 @@ export class App extends Component {
 
   addContact = ({ id, name, number }) => {
     const { contacts } = this.state;
-    if (contacts.find(contact => contact.name === name))
+    if (
+      contacts.find(
+        contact => contact.name.toLowerCase() === name.toLowerCase()
+      )
+    )
       return alert(`Number: ${name} is already in phonebook`);
     this.setState(prevState => {
-      return { contacts: [{ id, name, number }, ...prevState.contacts] };
+      return { contacts: [...prevState.contacts, { id, name, number }] };
     });
   };
   removeContact = id => {
@@ -43,9 +48,9 @@ export class App extends Component {
     const { filter } = this.state;
     return (
       <>
-        <h1 style={{ textAlign: 'center' }}>Phonebook</h1>
+        <h1 className={s.title}>Phonebook</h1>
         <ContactForm onSubmitData={this.addContact} />
-        <h2 style={{ textAlign: 'center' }}>Contacts</h2>
+        <h2 className={s.title}>Contacts</h2>
         <Filter value={filter} onChange={this.changeFilter} />
         <ContactsList
           contacts={this.getVisibleContacts()}
