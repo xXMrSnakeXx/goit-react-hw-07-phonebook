@@ -1,6 +1,5 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import { nanoid } from 'nanoid';
 
 import { ContactsListItem } from './ContactsListItem';
 import s from './ContactsList.module.css';
@@ -26,7 +25,7 @@ export class ContactsList extends Component {
         {contacts.length
           ? contacts.map(({ id, name, number }) => (
               <ContactsListItem
-                key={nanoid()}
+                key={id}
                 id={id}
                 name={name}
                 number={number}
