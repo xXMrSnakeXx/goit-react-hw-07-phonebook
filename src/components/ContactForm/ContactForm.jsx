@@ -5,39 +5,25 @@ import PropTypes from 'prop-types';
 import s from './ContactForm.module.css';
 
 export const ContactForm = ({ onSubmitData }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [form, setForm] = useState({ name: '', number: '' });
 
   const handleChange = e => {
     const { name, value } = e.currentTarget;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'number':
-        setNumber(value);
-        break;
-      default:
-        return;
-    }
+    setForm(prevForm => ({ ...prevForm, [name]: value }));
   };
 
   const handleSubmit = e => {
     e.preventDefault();
-    const data = {
-      id: nanoid(),
-      name,
-      number,
-    };
+    const data = { id: nanoid(), ...form };
     onSubmitData(data);
     formReset();
   };
 
   const formReset = () => {
-    setName('');
-    setNumber('');
+    setForm({ name: '', number: '' });
   };
 
+  const { name, number } = form;
   return (
     <div className={s.contactform}>
       <form onSubmit={handleSubmit}>
