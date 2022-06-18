@@ -1,21 +1,26 @@
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
-import { deleteContact } from 'redux/contactsSlice';
+import { useDeleteContactMutation } from 'redux/contactsApi';
+import Notiflix from 'notiflix';
 
 import s from './ContactsListItem.module.css';
 
 export const ContactsListItem = ({ id, name, number }) => {
-  const dispatch = useDispatch();
-
-  const contactsDelete = id => dispatch(deleteContact(id));
+  const [contactsDelete, { isSuccess, isLoading }] = useDeleteContactMutation();
 
   return (
-    <li id={id} className={s.item}>
-      {name}: {number}
-      <button className={s.btn} onClick={() => contactsDelete(id)}>
-        Delete
-      </button>
-    </li>
+    <>
+      <li id={id} className={s.item}>
+        {name}: {number}
+        <button
+          className={s.btn}
+          onClick={() => contactsDelete(id)}
+          disabled={isLoading}
+        >
+          Delete
+        </button>
+      </li>
+      {isSuccess && Notiflix.Notify.info('Contact deleted')}
+    </>
   );
 };
 ContactsListItem.propTypes = {

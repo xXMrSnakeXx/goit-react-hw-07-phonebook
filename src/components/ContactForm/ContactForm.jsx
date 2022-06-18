@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { nanoid } from 'nanoid';
-import { useSelector, useDispatch } from 'react-redux';
-import { addContact } from 'redux/contactsSlice';
+import { useGetContactsQuery, useAddContactMutation } from 'redux/contactsApi';
+import Notiflix from 'notiflix';
 
 import s from './ContactForm.module.css';
 
 export const ContactForm = () => {
-  const [form, setForm] = useState({ name: '', number: '' });
-
-  const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts.items);
+  const [form, setForm] = useState({ name: '', phone: '' });
+  const { data: contacts } = useGetContactsQuery();
+  const [addContact] = useAddContactMutation();
 
   const handleChange = e => {
     const { name, value } = e.currentTarget;
@@ -27,15 +26,16 @@ export const ContactForm = () => {
       formReset();
       return alert(`Number: ${data.name} is already in phonebook`);
     }
-    dispatch(addContact(data));
+    addContact(data);
+    Notiflix.Notify.success(`Contact added!`);
     formReset();
   };
 
   const formReset = () => {
-    setForm({ name: '', number: '' });
+    setForm({ name: '', phone: '' });
   };
 
-  const { name, number } = form;
+  const { name, phone } = form;
   return (
     <div className={s.contactform}>
       <form onSubmit={handleSubmit}>
@@ -57,11 +57,11 @@ export const ContactForm = () => {
           <input
             className={s.input}
             type="tel"
-            name="number"
+            name="phone"
             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
-            value={number}
+            value={phone}
             onChange={handleChange}
           />
         </label>

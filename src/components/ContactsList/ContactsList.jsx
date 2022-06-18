@@ -1,24 +1,44 @@
 import { useSelector } from 'react-redux';
+import { useGetContactsQuery } from 'redux/contactsApi';
+import { Rings } from 'react-loader-spinner';
 
 import { ContactsListItem } from './ContactsListItem';
 import s from './ContactsList.module.css';
 
-const getVisibleContacts = (items, filter) =>
-  items.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
-
 export const ContactsList = () => {
-  const items = useSelector(state => state.contacts.items);
-  const filter = useSelector(state => state.contacts.filter);
-  const contacts = getVisibleContacts(items, filter);
+  const { data: contacts, isLoading, isSuccess } = useGetContactsQuery();
+  const filter = useSelector(state => state.filter);
+
+  const getVisibleContacts = () => {
+    if (filter === '') {
+      return contacts;
+    }
+
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  };
+
+  const items = getVisibleContacts();
   return (
     <ul className={s.container}>
-      {contacts.length
-        ? contacts.map(({ id, name, number }) => (
-            <ContactsListItem key={id} id={id} name={name} number={number} />
-          ))
-        : 'No contacts'}
+      {isLoading && (
+        <div className={s.loader}>
+          <Rings
+            height="200"
+            width="200"
+            color="#b8b6beab"
+            ariaLabel="loading"
+          />
+        </div>
+      )}
+      {isSuccess &&
+        items.map(({ id, name, phone }) => (
+          <ContactsListItem key={id} id={id} name={name} number={phone} />
+        ))}
+      {items && items.length === 0 && (
+        <span className={s.text}> No contacts </span>
+      )}
     </ul>
   );
 };
