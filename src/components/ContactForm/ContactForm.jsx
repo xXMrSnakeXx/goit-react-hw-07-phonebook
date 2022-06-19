@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { useGetContactsQuery, useAddContactMutation } from 'redux/contactsApi';
 import Notiflix from 'notiflix';
@@ -8,7 +8,7 @@ import s from './ContactForm.module.css';
 export const ContactForm = () => {
   const [form, setForm] = useState({ name: '', phone: '' });
   const { data: contacts } = useGetContactsQuery();
-  const [addContact] = useAddContactMutation();
+  const [addContact, { isSuccess, isLoading }] = useAddContactMutation();
 
   const handleChange = e => {
     const { name, value } = e.currentTarget;
@@ -27,13 +27,18 @@ export const ContactForm = () => {
       return alert(`Number: ${data.name} is already in phonebook`);
     }
     addContact(data);
-    Notiflix.Notify.success(`Contact added!`);
-    formReset();
   };
 
   const formReset = () => {
     setForm({ name: '', phone: '' });
   };
+
+  useEffect(() => {
+    if (isLoading) {
+      Notiflix.Notify.success(`Contact added!`);
+      formReset();
+    }
+  }, [isLoading, isSuccess]);
 
   const { name, phone } = form;
   return (
@@ -65,7 +70,7 @@ export const ContactForm = () => {
             onChange={handleChange}
           />
         </label>
-        <button type="submit" className={s.btn}>
+        <button type="submit" className={s.btn} disabled={isLoading}>
           Add contact
         </button>
       </form>
